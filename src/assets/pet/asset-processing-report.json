@@ -1,0 +1,406 @@
+{
+  "schemaVersion": 5,
+  "scope": "all",
+  "backgroundMode": "semantic-cutout",
+  "segmentationBackend": "auto",
+  "subjectKind": "illustration",
+  "generationBackground": "transparent-grid",
+  "threshold": 28,
+  "feather": 12,
+  "safeMargin": 24,
+  "targetOccupancy": 0.78,
+  "assets": [
+    {
+      "ok": false,
+      "name": "idle-01.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\idle-01.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "idle-02.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\idle-02.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "idle-03.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\idle-03.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "idle-04.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\idle-04.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "blink-01.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\blink-01.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "blink-02.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\blink-02.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "blink-03.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\blink-03.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "blink-04.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\blink-04.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "blink-05.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\blink-05.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "happy-01.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\happy-01.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "happy-02.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\happy-02.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "happy-03.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\happy-03.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "happy-04.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\happy-04.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "happy-05.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\happy-05.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "notify-01.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\notify-01.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "notify-02.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\notify-02.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "notify-03.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\notify-03.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "notify-04.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\notify-04.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "notify-05.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\notify-05.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "peek-01.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\peek-01.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "peek-02.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\peek-02.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "peek-03.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\peek-03.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "peek-04.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\peek-04.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "peek-05.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\peek-05.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "pet-01.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\pet-01.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "pet-02.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\pet-02.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "pet-03.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\pet-03.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "pet-04.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\pet-04.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "pet-05.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\pet-05.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "bubble-01.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\bubble-01.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "bubble-02.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\bubble-02.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "bubble-03.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\bubble-03.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "bubble-04.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\bubble-04.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "bubble-05.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\bubble-05.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "bubble-06.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\bubble-06.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "chant-01.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\chant-01.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "chant-02.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\chant-02.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "chant-03.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\chant-03.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "chant-04.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\chant-04.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "chant-05.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\chant-05.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "chant-06.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\chant-06.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "walk-left-01.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\walk-left-01.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "walk-left-02.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\walk-left-02.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "walk-left-03.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\walk-left-03.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "walk-left-04.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\walk-left-04.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "walk-left-05.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\walk-left-05.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "walk-left-06.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\walk-left-06.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "walk-left-07.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\walk-left-07.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "walk-right-01.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\walk-right-01.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "walk-right-02.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\walk-right-02.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "walk-right-03.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\walk-right-03.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "walk-right-04.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\walk-right-04.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "walk-right-05.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\walk-right-05.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "walk-right-06.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\walk-right-06.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "walk-right-07.png",
+      "code": "ASSET_READ_FAILED",
+      "message": "ENOENT: no such file or directory, open 'C:\\Users\\Thinkpad\\Doubao\\chats\\2026-08-25\\new-chat\\grass-pet\\incoming-assets\\walk-right-07.png'",
+      "repair": "Restore the referenced source PNG or correct its exact case-sensitive path."
+    },
+    {
+      "ok": false,
+      "name": "core-ip/core-ip.png",
+      "code": "SEGMENTATION_BACKEND_UNAVAILABLE",
+      "message": "Controlled Windows rembg setup failed once via py; it will not retry or install globally: python.exe exceeded the 300 second cutout timeout",
+      "repair": "Use macOS 14+ Apple Vision or install the pinned rembg backend; do not bypass asset QA."
+    }
+  ]
+}

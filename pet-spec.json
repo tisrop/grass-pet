@@ -1,0 +1,328 @@
+{
+  "schemaVersion": 5,
+  "app": {
+    "name": "阿飘道长桌宠",
+    "appId": "com.grass.tuanzi",
+    "version": "1.0.0",
+    "language": "zh-CN"
+  },
+  "targets": {
+    "windows": {
+      "enabled": true,
+      "arch": "x64"
+    },
+    "macos": {
+      "enabled": false,
+      "arch": "current"
+    }
+  },
+  "character": {
+    "inputType": "single-image",
+    "coreAsset": "core-ip/core-ip.png",
+    "displayName": "阿飘道长",
+    "archetype": "fantasy",
+    "personality": [
+      "治愈",
+      "安静",
+      "呆萌",
+      "悠然"
+    ],
+    "preserveTraits": [
+      "白色圆润团子身体",
+      "头顶一株绿色小草",
+      "棕色圆眼",
+      "粉色圆形腮红",
+      "开心微笑表情",
+      "左右对称无方向感"
+    ],
+    "style": "preserve",
+    "mirrorSafe": true
+  },
+  "assetPipeline": {
+    "backgroundMode": "semantic-cutout",
+    "segmentationBackend": "auto",
+    "subjectKind": "illustration",
+    "generationBackground": "transparent-grid",
+    "backgroundTolerance": 28,
+    "edgeFeather": 12,
+    "safeMargin": 24,
+    "targetOccupancy": 0.78
+  },
+  "experience": {
+    "theme": {
+      "primary": "#3E5A76",
+      "accent": "#90AEC6",
+      "background": "#E6EDF4",
+      "surface": "#F7FAFC",
+      "text": "#1C2A3A",
+      "muted": "#7C90A5",
+      "cornerRadius": 24
+    },
+    "petSizing": {
+      "baseWindowPx": 240,
+      "defaultScale": 0.8
+    },
+    "interactions": [
+      {
+        "id": "chant-golden-light",
+        "emoji": "✨",
+        "label": "念诵金光咒",
+        "stateId": "chant",
+        "durationMs": 7000,
+        "affectionGain": 5,
+        "feedback": [
+          "天地玄宗，万气本根",
+          "金光速现，覆护真人",
+          "身有光明，三界侍卫"
+        ]
+      }
+    ]
+  },
+  "motion": {
+    "breathing": {
+      "enabled": true,
+      "periodMs": 3200,
+      "scaleX": 0.012,
+      "scaleY": 0.022
+    },
+    "squashStretch": {
+      "enabled": true,
+      "durationMs": 320,
+      "intensity": 0.08
+    },
+    "idleIntervalMs": {
+      "min": 7000,
+      "max": 13000
+    }
+  },
+  "features": {
+    "transparentWindow": true,
+    "drag": true,
+    "tray": true,
+    "edgeSnap": true,
+    "reminders": true,
+    "interactions": false,
+    "relationship": true,
+    "filePocket": false,
+    "dashboard": true,
+    "typingReaction": false,
+    "autonomousMovement": true
+  },
+  "states": [
+    {
+      "id": "idle",
+      "triggers": [
+        "app:start",
+        "ambient:idle"
+      ],
+      "frames": [
+        "idle-01.png",
+        "idle-02.png",
+        "idle-03.png",
+        "idle-04.png"
+      ],
+      "frameDurationMs": 450,
+      "loop": true,
+      "priority": 10,
+      "interrupt": "resume",
+      "cooldownMs": 0,
+      "direction": "neutral",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95
+      },
+      "mirrorSafe": true
+    },
+    {
+      "id": "blink",
+      "triggers": [
+        "ambient:blink"
+      ],
+      "frames": [
+        "blink-01.png",
+        "blink-02.png",
+        "blink-03.png",
+        "blink-04.png",
+        "blink-05.png"
+      ],
+      "frameDurationMs": 75,
+      "loop": false,
+      "priority": 30,
+      "interrupt": "restart",
+      "cooldownMs": 2500,
+      "direction": "neutral",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95
+      },
+      "mirrorSafe": true
+    },
+    {
+      "id": "happy",
+      "triggers": [
+        "pointer:tap"
+      ],
+      "frames": [
+        "happy-01.png",
+        "happy-02.png",
+        "happy-03.png",
+        "happy-04.png",
+        "happy-05.png"
+      ],
+      "frameDurationMs": 110,
+      "loop": false,
+      "priority": 70,
+      "interrupt": "restart",
+      "cooldownMs": 300,
+      "direction": "neutral",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95
+      },
+      "mirrorSafe": true
+    },
+    {
+      "id": "notify",
+      "triggers": [
+        "reminder:due"
+      ],
+      "frames": [
+        "notify-01.png",
+        "notify-02.png",
+        "notify-03.png",
+        "notify-04.png",
+        "notify-05.png"
+      ],
+      "frameDurationMs": 120,
+      "loop": false,
+      "priority": 95,
+      "interrupt": "restart",
+      "cooldownMs": 800,
+      "direction": "neutral",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95
+      },
+      "mirrorSafe": true
+    },
+    {
+      "id": "peek",
+      "triggers": [
+        "window:edge-snap"
+      ],
+      "frames": [
+        "peek-01.png",
+        "peek-02.png",
+        "peek-03.png",
+        "peek-04.png",
+        "peek-05.png"
+      ],
+      "frameDurationMs": 120,
+      "loop": false,
+      "priority": 55,
+      "interrupt": "resume",
+      "cooldownMs": 1800,
+      "direction": "neutral",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95
+      },
+      "mirrorSafe": true
+    },
+    {
+      "id": "chant",
+      "triggers": [
+        "interaction:chant-golden-light"
+      ],
+      "frames": [
+        "chant-01.png",
+        "chant-02.png",
+        "chant-03.png",
+        "chant-04.png",
+        "chant-05.png",
+        "chant-06.png"
+      ],
+      "frameDurationMs": 150,
+      "loop": true,
+      "priority": 85,
+      "interrupt": "restart",
+      "cooldownMs": 500,
+      "direction": "neutral",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95
+      },
+      "mirrorSafe": true
+    },
+    {
+      "id": "walk-left",
+      "triggers": [
+        "movement:left"
+      ],
+      "frames": [
+        "walk-left-01.png",
+        "walk-left-02.png",
+        "walk-left-03.png",
+        "walk-left-04.png",
+        "walk-left-05.png",
+        "walk-left-06.png",
+        "walk-left-07.png"
+      ],
+      "frameDurationMs": 150,
+      "loop": true,
+      "priority": 40,
+      "interrupt": "resume",
+      "cooldownMs": 0,
+      "direction": "left",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95
+      },
+      "mirrorSafe": false
+    },
+    {
+      "id": "walk-right",
+      "triggers": [
+        "movement:right"
+      ],
+      "frames": [
+        "walk-right-01.png",
+        "walk-right-02.png",
+        "walk-right-03.png",
+        "walk-right-04.png",
+        "walk-right-05.png",
+        "walk-right-06.png",
+        "walk-right-07.png"
+      ],
+      "frameDurationMs": 150,
+      "loop": true,
+      "priority": 40,
+      "interrupt": "resume",
+      "cooldownMs": 0,
+      "direction": "right",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95
+      },
+      "mirrorSafe": false
+    }
+  ],
+  "storage": {
+    "userData": "app-user-data",
+    "filePocket": "documents-app-name"
+  },
+  "build": {
+    "windows": {
+      "arch": "x64",
+      "installer": "squirrel",
+      "portable": "zip"
+    },
+    "macos": {
+      "arch": "current",
+      "diskImage": "dmg",
+      "portable": "zip"
+    },
+    "timeoutMinutes": 20,
+    "unsigned": true
+  }
+}

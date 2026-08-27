@@ -1,0 +1,25 @@
+{
+  "mainBinaryName": "grass-pet-tauri-e2e",
+  "build": {
+    "beforeBuildCommand": "npm run vue:build:e2e"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "security": {
+      "capabilities": [
+        {
+          "identifier": "e2e",
+          "description": "Test-only permissions for the embedded WebdriverIO runner",
+          "windows": ["pet", "dashboard", "reminder", "context-menu"],
+          "permissions": [
+            "core:default",
+            "core:event:default",
+            "core:window:default",
+            "notification:default",
+            "wdio:default"
+          ]
+        }
+      ]
+    }
+  }
+}

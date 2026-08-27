@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Permissions for the desktop pet windows",
+  "windows": ["pet", "dashboard", "reminder", "context-menu"],
+  "permissions": ["core:default", "core:event:default", "core:window:default", "notification:default"]
+}

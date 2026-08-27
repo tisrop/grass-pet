@@ -1,0 +1,78 @@
+import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
+import './e2e';
+import type {
+  InteractionResult,
+  InteractionSpec,
+  PetAPI,
+  PetStats,
+  Reminder,
+  RuntimeFailureReport,
+  RuntimeReadyReport,
+  Settings,
+  StateActivity,
+} from '../../src/shared/contracts';
+
+function onEvent<T>(name: string, listener: (payload: T) => void): () => void {
+  let disposed = false;
+  let unlisten: (() => void) | undefined;
+  void listen<T>(name, (event) => listener(event.payload)).then((stop) => {
+    if (disposed) stop();
+    else unlisten = stop;
+  });
+  return () => {
+    disposed = true;
+    unlisten?.();
+  };
+}
+
+const tauriApi: PetAPI = {
+  settings: {
+    get: () => invoke<Settings>('settings_get'),
+    update: (patch) => invoke<Settings>('settings_update', { patch }),
+  },
+  reminders: {
+    list: () => invoke<Reminder[]>('reminders_list'),
+    save: (input) => invoke<Reminder>('reminders_save', { input }),
+    remove: (id) => invoke<boolean>('reminders_remove', { id }),
+  },
+  interactions: {
+    list: () => invoke<InteractionSpec[]>('interactions_list'),
+    trigger: (id) => invoke<InteractionResult>('interactions_trigger', { id }),
+    stats: () => invoke<PetStats>('interactions_stats'),
+  },
+  files: {
+    getPathForFile: () => '',
+    put: async (paths) => ({
+      copied: [],
+      failed: paths.map((source) => ({ source, reason: 'Tauri file pocket is not migrated yet' })),
+    }),
+    openPocket: async () => undefined,
+  },
+  window: {
+    beginDrag: () => invoke<void>('window_start_dragging'),
+    updateDrag: async () => undefined,
+    endDrag: () => invoke<void>('window_finish_drag'),
+    showContextMenu: () => invoke<void>('window_show_context_menu'),
+    showReminder: () => invoke<void>('window_show_reminder'),
+    showDashboard: () => invoke<void>('window_show_dashboard'),
+    hideReminder: () => invoke<void>('window_hide', { label: 'reminder' }),
+    hideDashboard: () => invoke<void>('window_hide', { label: 'dashboard' }),
+    hidePet: () => invoke<void>('window_hide', { label: 'pet' }),
+  },
+  walk: {
+    setPaused: (reason, paused) => invoke<void>('walk_set_paused', { reason, paused }),
+  },
+  runtime: {
+    ready: (report: RuntimeReadyReport) => invoke<void>('runtime_ready', { report }),
+    fail: (report: RuntimeFailureReport) => invoke<void>('runtime_fail', { report }),
+  },
+  events: {
+    onStateActivity: (listener) => onEvent<StateActivity>('state-activity', listener),
+    onReminder: (listener) => onEvent<Reminder>('reminder-due', listener),
+    onReminderCompose: (listener) => onEvent<undefined>('reminder-compose', listener),
+    onStats: (listener) => onEvent<PetStats>('stats-updated', listener),
+  },
+};
+
+export const petApi: PetAPI = window.petAPI ?? tauriApi;
