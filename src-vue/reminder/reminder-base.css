@@ -21,20 +21,6 @@ html, body {
   gap: 16px;
 }
 
-.card {
-  background: var(--surface, #ffffff);
-  border-radius: var(--radius, 24px);
-  padding: 20px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-}
-
-.title {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text, #3a2a20);
-  margin-bottom: 12px;
-}
-
 .input-group {
   display: flex;
   flex-direction: column;

@@ -14,7 +14,6 @@ use uuid::Uuid;
 pub struct SettingsPatch {
     edge_snap: Option<bool>,
     always_on_top: Option<bool>,
-    typing_reaction: Option<bool>,
     click_through: Option<bool>,
     pet_scale: Option<f64>,
 }
@@ -78,9 +77,6 @@ pub fn settings_update(
         }
         if let Some(value) = patch.always_on_top {
             data.settings.always_on_top = value;
-        }
-        if let Some(value) = patch.typing_reaction {
-            data.settings.typing_reaction = value;
         }
         if let Some(value) = patch.click_through {
             data.settings.click_through = value;

@@ -16,7 +16,6 @@ use std::{
 pub struct Settings {
     pub edge_snap: bool,
     pub always_on_top: bool,
-    pub typing_reaction: bool,
     pub click_through: bool,
     pub pet_scale: f64,
 }
@@ -26,7 +25,6 @@ impl Default for Settings {
         Self {
             edge_snap: true,
             always_on_top: true,
-            typing_reaction: false,
             click_through: false,
             pet_scale: 0.8,
         }

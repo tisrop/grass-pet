@@ -112,7 +112,6 @@ export interface PetStats {
 export interface Settings {
   edgeSnap: boolean;
   alwaysOnTop: boolean;
-  typingReaction: boolean;
   clickThrough: boolean;
   petScale: number;
 }
@@ -141,11 +140,6 @@ export interface RuntimeReadyReport {
   naturalHeight: number;
   petVisible: boolean;
   ipcReady: boolean;
-  renderers?: {
-    pet: boolean;
-    dashboard: boolean;
-    reminder: boolean;
-  };
 }
 
 export interface RuntimeFailureReport {
@@ -173,14 +167,8 @@ export interface PetAPI {
     trigger: (id: string) => Promise<InteractionResult>;
     stats: () => Promise<PetStats>;
   };
-  files: {
-    getPathForFile: (file: File) => string;
-    put: (paths: string[]) => Promise<{ copied: string[]; failed: Array<{ source: string; reason: string }> }>;
-    openPocket: () => Promise<void>;
-  };
   window: {
     beginDrag: () => Promise<void>;
-    updateDrag: () => Promise<void>;
     endDrag: () => Promise<void>;
     showContextMenu: () => Promise<void>;
     showReminder: () => Promise<void>;

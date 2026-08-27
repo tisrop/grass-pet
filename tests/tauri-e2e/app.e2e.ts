@@ -23,7 +23,6 @@ interface WindowSnapshot {
 interface Settings {
   edgeSnap: boolean;
   alwaysOnTop: boolean;
-  typingReaction: boolean;
   clickThrough: boolean;
   petScale: number;
 }

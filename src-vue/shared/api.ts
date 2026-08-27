@@ -41,17 +41,8 @@ const tauriApi: PetAPI = {
     trigger: (id) => invoke<InteractionResult>('interactions_trigger', { id }),
     stats: () => invoke<PetStats>('interactions_stats'),
   },
-  files: {
-    getPathForFile: () => '',
-    put: async (paths) => ({
-      copied: [],
-      failed: paths.map((source) => ({ source, reason: 'Tauri file pocket is not migrated yet' })),
-    }),
-    openPocket: async () => undefined,
-  },
   window: {
     beginDrag: () => invoke<void>('window_start_dragging'),
-    updateDrag: async () => undefined,
     endDrag: () => invoke<void>('window_finish_drag'),
     showContextMenu: () => invoke<void>('window_show_context_menu'),
     showReminder: () => invoke<void>('window_show_reminder'),

@@ -21,20 +21,6 @@ html, body {
   gap: 16px;
 }
 
-.card {
-  background: linear-gradient(165deg, var(--surface, #f7fafc) 0%, var(--background, #e6edf4) 100%);
-  border-radius: var(--radius, 24px);
-  padding: 20px;
-  box-shadow: 0 8px 32px rgba(30, 42, 58, 0.18);
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
 .pet-avatar {
   width: 64px;
   height: 64px;
