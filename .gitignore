@@ -10,3 +10,5 @@ Thumbs.db
 dist-vue/
 src-tauri/target/
 pet-spec.json.bak
+
+.idea/
