@@ -5,7 +5,10 @@ use crate::{
 };
 use chrono::{DateTime, Local, Utc};
 use serde::{Deserialize, Serialize};
-use std::collections::HashSet;
+use std::{
+    collections::HashSet,
+    process::{Command, Stdio},
+};
 use tauri::{Emitter, Manager, State, WebviewWindow};
 use uuid::Uuid;
 
@@ -52,6 +55,26 @@ pub struct StateActivity {
     pub state_id: Option<String>,
     pub duration_ms: Option<u64>,
     pub feedback: Option<String>,
+}
+
+pub(crate) fn spawn_new_pet_process() -> Result<u32, String> {
+    let executable = std::env::current_exe().map_err(|error| error.to_string())?;
+    let mut command = Command::new(executable);
+    command
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null());
+    #[cfg(feature = "e2e")]
+    command.env("WDIO_EMBEDDED_PORT", "45555");
+    command
+        .spawn()
+        .map(|child| child.id())
+        .map_err(|error| error.to_string())
+}
+
+#[tauri::command]
+pub fn summon_new_pet() -> Result<u32, String> {
+    spawn_new_pet_process()
 }
 
 #[tauri::command]

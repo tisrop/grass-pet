@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { spawn, type ChildProcess } from 'node:child_process';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 import { browser } from '@wdio/globals';
 
 interface Point {
@@ -32,6 +33,11 @@ interface Reminder {
   text: string;
   dueAt: string;
   createdAt: string;
+}
+
+interface PersistedState {
+  settings: Settings;
+  reminders: Reminder[];
 }
 
 async function invoke<T>(command: string, args?: Record<string, unknown>): Promise<T> {
@@ -94,14 +100,27 @@ async function waitForWindowVisibility(label: string, visible: boolean): Promise
   return latest!;
 }
 
-async function stopChild(child: ChildProcess): Promise<void> {
-  if (child.exitCode !== null || child.signalCode !== null) return;
-  child.kill('SIGTERM');
-  const exited = await Promise.race([
-    new Promise<boolean>((resolve) => child.once('exit', () => resolve(true))),
-    new Promise<boolean>((resolve) => setTimeout(() => resolve(false), 5_000)),
-  ]);
-  if (!exited && child.exitCode === null) child.kill('SIGKILL');
+async function stopPid(pid: number): Promise<void> {
+  try { process.kill(pid, 'SIGTERM'); } catch { return; }
+  for (let attempt = 0; attempt < 50; attempt += 1) {
+    try { process.kill(pid, 0); }
+    catch { return; }
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  try { process.kill(pid, 'SIGKILL'); } catch { /* process already exited */ }
+}
+
+async function readPersistedState(file: string): Promise<PersistedState> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt < 100; attempt += 1) {
+    try {
+      return JSON.parse(await readFile(file, 'utf8')) as PersistedState;
+    } catch (error) {
+      lastError = error;
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+  }
+  throw lastError;
 }
 
 describe('Tauri desktop pet', () => {
@@ -197,7 +216,7 @@ describe('Tauri desktop pet', () => {
     await browser.$('.pet-context-menu').waitForDisplayed();
     const labels = await browser.execute(() => [...document.querySelectorAll('.pet-context-menu__item')]
       .map((item) => item.textContent?.trim() ?? ''));
-    for (const expected of ['添加提醒', '道观', '鼠标穿透', '隐藏桌宠']) {
+    for (const expected of ['再召唤一个阿飘', '添加提醒', '道观', '鼠标穿透', '隐藏桌宠']) {
       assert.ok(labels.some((label) => label.includes(expected)), `context menu is missing ${expected}`);
     }
     await browser.$('button*=道观').click();
@@ -241,31 +260,28 @@ describe('Tauri desktop pet', () => {
     createdReminderIds.delete(saved.id);
   });
 
-  it('allows a second application process without implementing state isolation', async () => {
-    const binary = process.env.TAURI_E2E_BINARY;
-    assert.ok(binary, 'TAURI_E2E_BINARY is required');
-    const second = spawn(binary, [], {
-      env: {
-        ...process.env,
-        WDIO_EMBEDDED_PORT: '45555',
+  it('summons another pet process while all pets share one state file', async () => {
+    const dataRoot = process.env.GRASS_PET_E2E_DATA_DIR;
+    assert.ok(dataRoot, 'GRASS_PET_E2E_DATA_DIR is required');
+
+    await invoke<Settings>('settings_update', { patch: { edgeSnap: false } });
+    const sharedReminder = await invoke<Reminder>('reminders_save', {
+      input: {
+        text: 'Shared by summoned pets',
+        dueAt: '2030-01-01T12:00:00.000Z',
       },
-      stdio: 'ignore',
     });
+    createdReminderIds.add(sharedReminder.id);
+
+    const summonedPid = await invoke<number>('summon_new_pet');
     try {
-      await new Promise<void>((resolve, reject) => {
-        const timer = setTimeout(resolve, 2_000);
-        second.once('error', (error) => {
-          clearTimeout(timer);
-          reject(error);
-        });
-        second.once('exit', (code, signal) => {
-          clearTimeout(timer);
-          reject(new Error(`second process exited early: code=${code} signal=${signal}`));
-        });
-      });
-      assert.equal(second.exitCode, null);
+      await new Promise((resolve) => setTimeout(resolve, 1_000));
+      assert.doesNotThrow(() => process.kill(summonedPid, 0));
+      const sharedState = await readPersistedState(path.join(dataRoot, 'state.json'));
+      assert.equal(sharedState.settings.edgeSnap, false);
+      assert.equal(sharedState.reminders.some((item) => item.id === sharedReminder.id), true);
     } finally {
-      await stopChild(second);
+      await stopPid(summonedPid);
     }
   });
 });

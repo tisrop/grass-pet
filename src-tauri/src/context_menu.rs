@@ -117,7 +117,7 @@ mod tests {
         x: 0,
         y: 0,
         width: 154,
-        height: 128,
+        height: 158,
     };
 
     #[test]
@@ -134,7 +134,7 @@ mod tests {
             8,
         );
         assert_eq!(position.x, 1086);
-        assert_eq!(position.y, 772);
+        assert_eq!(position.y, 742);
     }
 
     #[test]
@@ -151,6 +151,6 @@ mod tests {
             8,
         );
         assert_eq!(position.x, 400);
-        assert_eq!(position.y, 544);
+        assert_eq!(position.y, 514);
     }
 }

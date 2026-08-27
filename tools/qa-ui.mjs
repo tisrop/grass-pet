@@ -22,8 +22,8 @@ add('dashboard-hidden-scrollbar', /scrollbar-width:\s*none/.test(files.dashboard
 add('reminder-hidden-scrollbar', /scrollbar-width:\s*none/.test(files.reminder) && /::-webkit-scrollbar\s*\{[^}]*width:\s*0[^}]*height:\s*0/s.test(files.reminder), 'reminder internal scrolling must not expose a system scrollbar');
 add('native-control-reset', /appearance:\s*none/.test(files.dashboard) && /appearance:\s*none/.test(files.reminder), 'native form controls must reset OS appearance');
 add('png-tray-runtime', /Image::from_bytes\(include_bytes!\("\.\.\/\.\.\/src\/assets\/tray\/tray-icon\.png"\)\)/.test(files.tray), 'Tauri tray must embed the checked PNG asset at compile time');
-add('tray-actions', ['show-pet', 'dashboard', 'reminder', 'toggle-click-through', 'hide-pet', 'quit'].every((id) => files.tray.includes(`"${id}"`)), 'Tauri tray must retain all desktop pet actions');
-add('menu-emoji', ['⏰', '🏠', '🖱️', '🙈'].every((emoji) => files.contextMenu.includes(emoji)) && spec.experience.interactions.every((interaction) => typeof interaction.emoji === 'string' && interaction.emoji.length > 0), 'custom context and interaction menus need semantic emoji');
+add('tray-actions', ['show-pet', 'summon-pet', 'dashboard', 'reminder', 'toggle-click-through', 'hide-pet', 'quit'].every((id) => files.tray.includes(`"${id}"`)), 'Tauri tray must retain all desktop pet actions');
+add('menu-emoji', ['👻', '⏰', '🏠', '🖱️', '🙈'].every((emoji) => files.contextMenu.includes(emoji)) && spec.experience.interactions.every((interaction) => typeof interaction.emoji === 'string' && interaction.emoji.length > 0), 'custom context and interaction menus need semantic emoji');
 
 const baseWindow = Number(spec.experience?.petSizing?.baseWindowPx);
 const defaultScale = Number(spec.experience?.petSizing?.defaultScale);

@@ -14,6 +14,7 @@ pub fn install(app: &tauri::App) -> tauri::Result<()> {
         .map(|data| data.settings.click_through)
         .unwrap_or(false);
     let show_pet = MenuItem::with_id(app, "show-pet", "显示桌宠", true, None::<&str>)?;
+    let summon_pet = MenuItem::with_id(app, "summon-pet", "再召唤一个阿飘", true, None::<&str>)?;
     let dashboard = MenuItem::with_id(app, "dashboard", "打开道观", true, None::<&str>)?;
     let reminder = MenuItem::with_id(app, "reminder", "添加提醒", true, None::<&str>)?;
     let click_through = MenuItem::with_id(
@@ -33,6 +34,7 @@ pub fn install(app: &tauri::App) -> tauri::Result<()> {
         app,
         &[
             &show_pet,
+            &summon_pet,
             &dashboard,
             &reminder,
             &click_through,
@@ -52,6 +54,9 @@ pub fn install(app: &tauri::App) -> tauri::Result<()> {
                 if let Some(window) = app.get_webview_window("pet") {
                     let _ = window.show();
                 }
+            }
+            "summon-pet" => {
+                let _ = commands::spawn_new_pet_process();
             }
             "dashboard" => {
                 let _ = commands::show_window(app, "dashboard");

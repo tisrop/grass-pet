@@ -44,6 +44,7 @@ const tauriApi: PetAPI = {
   window: {
     beginDrag: () => invoke<void>('window_start_dragging'),
     endDrag: () => invoke<void>('window_finish_drag'),
+    summonPet: () => invoke<number>('summon_new_pet'),
     showContextMenu: () => invoke<void>('window_show_context_menu'),
     showReminder: () => invoke<void>('window_show_reminder'),
     showDashboard: () => invoke<void>('window_show_dashboard'),

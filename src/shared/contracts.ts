@@ -170,6 +170,7 @@ export interface PetAPI {
   window: {
     beginDrag: () => Promise<void>;
     endDrag: () => Promise<void>;
+    summonPet: () => Promise<number>;
     showContextMenu: () => Promise<void>;
     showReminder: () => Promise<void>;
     showDashboard: () => Promise<void>;

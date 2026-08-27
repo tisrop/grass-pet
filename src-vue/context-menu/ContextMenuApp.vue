@@ -85,6 +85,11 @@ onBeforeUnmount(() => {
       @contextmenu.prevent
       @keydown="handleKeydown"
     >
+      <button class="pet-context-menu__item" type="button" role="menuitem" @click="runContextAction(() => petApi.window.summonPet())">
+        <span class="pet-context-menu__icon" aria-hidden="true">👻</span>
+        <span>再召唤一个阿飘</span>
+      </button>
+      <div class="pet-context-menu__separator" role="separator" />
       <button
         v-for="interaction in menuInteractions"
         :key="interaction.id"

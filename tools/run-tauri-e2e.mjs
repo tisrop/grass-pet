@@ -19,7 +19,7 @@ const child = spawn(process.execPath, [cli, 'run', path.join(root, 'wdio.conf.ts
   cwd: root,
   env: {
     ...process.env,
-    GRASS_PET_E2E_STATE: path.join(temporary, 'state.json'),
+    GRASS_PET_E2E_DATA_DIR: temporary,
     TAURI_E2E_BINARY: binary,
   },
   stdio: 'inherit',

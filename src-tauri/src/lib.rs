@@ -21,13 +21,14 @@ pub fn run() {
     let app = builder
         .setup(|app| {
             #[cfg(feature = "e2e")]
-            let data_path = std::env::var_os("GRASS_PET_E2E_STATE")
+            let data_root = std::env::var_os("GRASS_PET_E2E_DATA_DIR")
                 .map(std::path::PathBuf::from)
-                .unwrap_or(app.path().app_data_dir()?.join("state-e2e.json"));
+                .unwrap_or(app.path().app_data_dir()?.join("e2e"));
             #[cfg(not(feature = "e2e"))]
-            let data_path = app.path().app_data_dir()?.join("state.json");
-            let state = AppState::load(data_path);
+            let data_root = app.path().app_data_dir()?;
+            let state = AppState::load_shared(&data_root)?;
             state.normalize_stats_day(&Local::now().date_naive().to_string())?;
+            state.persist()?;
             let settings = state
                 .data
                 .lock()
@@ -45,6 +46,7 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            commands::summon_new_pet,
             commands::settings_get,
             commands::settings_update,
             commands::reminders_list,

@@ -107,6 +107,13 @@ impl AppState {
         }
     }
 
+    pub fn load_shared(data_root: &Path) -> Result<Self, String> {
+        fs::create_dir_all(data_root).map_err(|error| error.to_string())?;
+        let path = data_root.join("state.json");
+        restore_isolated_state(data_root, &path)?;
+        Ok(Self::load(path))
+    }
+
     pub fn next_drag_id(&self) -> u64 {
         self.drag_sequence.fetch_add(1, Ordering::Relaxed) + 1
     }
@@ -163,7 +170,7 @@ impl AppState {
 fn write_json_atomic(path: &Path, value: &PersistedData) -> Result<(), String> {
     let parent = path.parent().ok_or("settings path has no parent")?;
     fs::create_dir_all(parent).map_err(|error| error.to_string())?;
-    let temporary = path.with_extension("json.tmp");
+    let temporary = path.with_extension(format!("{}.json.tmp", std::process::id()));
     let bytes = serde_json::to_vec_pretty(value).map_err(|error| error.to_string())?;
     let mut file = fs::File::create(&temporary).map_err(|error| error.to_string())?;
     file.write_all(&bytes).map_err(|error| error.to_string())?;
@@ -172,10 +179,31 @@ fn write_json_atomic(path: &Path, value: &PersistedData) -> Result<(), String> {
     fs::rename(temporary, path).map_err(|error| error.to_string())
 }
 
+fn restore_isolated_state(data_root: &Path, destination: &Path) -> Result<(), String> {
+    if destination.exists() {
+        return Ok(());
+    }
+    let isolated = data_root
+        .join("instances")
+        .join("instance-1")
+        .join("state.json");
+    if !isolated.exists() {
+        return Ok(());
+    }
+    match fs::rename(&isolated, destination) {
+        Ok(()) => Ok(()),
+        Err(_) => {
+            fs::copy(&isolated, destination).map_err(|error| error.to_string())?;
+            fs::remove_file(isolated).map_err(|error| error.to_string())
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::AppState;
-    use std::path::PathBuf;
+    use std::{fs, path::PathBuf};
+    use uuid::Uuid;
 
     fn state() -> AppState {
         AppState::load(PathBuf::from("/tmp/grass-pet-state-unit-test.json"))
@@ -208,5 +236,20 @@ mod tests {
                 .companion_minutes,
             2
         );
+    }
+
+    #[test]
+    fn restores_instance_one_data_to_the_shared_state_file() {
+        let root = std::env::temp_dir().join(format!("grass-pet-shared-test-{}", Uuid::new_v4()));
+        let isolated = root.join("instances/instance-1/state.json");
+        fs::create_dir_all(isolated.parent().expect("isolated parent")).expect("create dirs");
+        fs::write(&isolated, b"{\"settings\":{}}\n").expect("write isolated state");
+
+        let state = AppState::load_shared(&root).expect("load shared state");
+
+        assert!(root.join("state.json").exists());
+        assert!(!isolated.exists());
+        drop(state);
+        fs::remove_dir_all(root).expect("remove temp root");
     }
 }

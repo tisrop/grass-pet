@@ -22,12 +22,15 @@ function forbidMatch(value, pattern, message) {
   if (pattern.test(value)) issues.push(message);
 }
 
-const [packageText, configText, e2eConfigText, cargoText, libText, apiText, viteText, wdioText] = await Promise.all([
+const [packageText, configText, e2eConfigText, cargoText, libText, commandsText, trayText, contextMenuText, apiText, viteText, wdioText] = await Promise.all([
   read('package.json'),
   read('src-tauri/tauri.conf.json'),
   read('src-tauri/tauri.e2e.conf.json'),
   read('src-tauri/Cargo.toml'),
   read('src-tauri/src/lib.rs'),
+  read('src-tauri/src/commands.rs'),
+  read('src-tauri/src/tray.rs'),
+  read('src-vue/context-menu/ContextMenuApp.vue'),
   read('src-vue/shared/api.ts'),
   read('vite.config.mts'),
   read('wdio.conf.ts'),
@@ -148,6 +151,11 @@ if (!JSON.stringify(e2eConfig).includes('wdio:default')) {
 requireMatch(cargoText, /name\s*=\s*"grass-pet-tauri"/, 'src-tauri/Cargo.toml: missing Tauri crate');
 requireMatch(cargoText, /tauri\s*=\s*\{/, 'src-tauri/Cargo.toml: missing tauri dependency');
 requireMatch(cargoText, /e2e\s*=\s*\[[^\]]*tauri-plugin-wdio[^\]]*tauri-plugin-wdio-webdriver/s, 'src-tauri/Cargo.toml: WDIO plugins must be behind the e2e feature');
+requireMatch(libText, /AppState::load_shared\(&data_root\)/, 'src-tauri/src/lib.rs: all pet processes must use the shared state file');
+requireMatch(commandsText, /summon_new_pet/, 'src-tauri/src/commands.rs: missing summon command');
+requireMatch(commandsText, /std::env::current_exe\(\)/, 'src-tauri/src/commands.rs: summon command must relaunch the current application binary');
+requireMatch(trayText, /再召唤一个阿飘/, 'src-tauri/src/tray.rs: tray summon item is missing');
+requireMatch(contextMenuText, /再召唤一个阿飘/, 'src-vue/context-menu/ContextMenuApp.vue: context-menu summon item is missing');
 requireMatch(libText, /cfg\(feature\s*=\s*"e2e"\)/, 'src-tauri/src/lib.rs: E2E plugin registration must be feature-gated');
 requireMatch(libText, /tauri_plugin_wdio_webdriver::init\(\)/, 'src-tauri/src/lib.rs: embedded WebDriver plugin is missing');
 requireMatch(libText, /tauri_plugin_wdio::init\(\)/, 'src-tauri/src/lib.rs: WDIO bridge plugin is missing');
