@@ -1,7 +1,7 @@
 {
   "name": "apiao-daozhang-desktop-pet",
   "productName": "阿飘道长桌宠",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Vue, Rust and Tauri cross-platform desktop pet",
   "private": true,
   "scripts": {
