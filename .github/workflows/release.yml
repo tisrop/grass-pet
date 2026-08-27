@@ -61,8 +61,22 @@ jobs:
         run: |
           set -euo pipefail
 
-          if gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${RELEASE_TAG}" \
-            > "$RUNNER_TEMP/release.json" 2>/dev/null; then
+          gh api --paginate \
+            "repos/${GITHUB_REPOSITORY}/releases?per_page=100" \
+            | jq -s 'add // []' > "$RUNNER_TEMP/releases.json"
+
+          MATCH_COUNT="$(jq --arg tag "$RELEASE_TAG" \
+            '[.[] | select(.tag_name == $tag)] | length' \
+            "$RUNNER_TEMP/releases.json")"
+          if [ "$MATCH_COUNT" -gt 1 ]; then
+            echo "Multiple releases found for tag $RELEASE_TAG; refusing an ambiguous update" >&2
+            exit 1
+          fi
+
+          if [ "$MATCH_COUNT" -eq 1 ]; then
+            jq --arg tag "$RELEASE_TAG" \
+              '.[] | select(.tag_name == $tag)' \
+              "$RUNNER_TEMP/releases.json" > "$RUNNER_TEMP/release.json"
             if [ "$(jq -r '.draft' "$RUNNER_TEMP/release.json")" != "true" ]; then
               echo "Release $RELEASE_TAG is already published; refusing to replace immutable assets" >&2
               exit 1
@@ -77,13 +91,19 @@ jobs:
                 "repos/${GITHUB_REPOSITORY}/releases/assets/${ASSET_ID}"
             done < <(jq -r '.[].id' "$RUNNER_TEMP/assets.json")
           else
-            gh release create "$RELEASE_TAG" \
-              --repo "$GITHUB_REPOSITORY" \
-              --draft \
-              --verify-tag \
-              --generate-notes \
-              --title "阿飘道长桌宠 ${RELEASE_TAG}"
-            gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${RELEASE_TAG}" \
+            jq -n \
+              --arg tag "$RELEASE_TAG" \
+              --arg name "阿飘道长桌宠 ${RELEASE_TAG}" \
+              '{
+                tag_name: $tag,
+                name: $name,
+                draft: true,
+                prerelease: false,
+                generate_release_notes: true
+              }' > "$RUNNER_TEMP/create-release.json"
+            gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/releases" \
+              --input "$RUNNER_TEMP/create-release.json" \
               > "$RUNNER_TEMP/release.json"
             RELEASE_ID="$(jq -r '.id' "$RUNNER_TEMP/release.json")"
           fi
