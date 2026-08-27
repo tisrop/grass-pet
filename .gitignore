@@ -12,3 +12,4 @@ src-tauri/target/
 pet-spec.json.bak
 
 .idea/
+src/assets/pet/asset-processing-report.json
