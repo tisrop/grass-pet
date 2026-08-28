@@ -10,6 +10,11 @@ on:
         description: Existing vX.Y.Z tag to publish
         required: true
         type: string
+      repair_existing:
+        description: Rebuild and replace assets in an existing published release
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -60,6 +65,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
+          REPAIR_EXISTING="${{ github.event_name == 'workflow_dispatch' && inputs.repair_existing || false }}"
 
           gh api --paginate \
             "repos/${GITHUB_REPOSITORY}/releases?per_page=100" \
@@ -77,19 +83,22 @@ jobs:
             jq --arg tag "$RELEASE_TAG" \
               '.[] | select(.tag_name == $tag)' \
               "$RUNNER_TEMP/releases.json" > "$RUNNER_TEMP/release.json"
-            if [ "$(jq -r '.draft' "$RUNNER_TEMP/release.json")" != "true" ]; then
-              echo "Release $RELEASE_TAG is already published; refusing to replace immutable assets" >&2
-              exit 1
-            fi
-
             RELEASE_ID="$(jq -r '.id' "$RUNNER_TEMP/release.json")"
-            gh api --paginate \
-              "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets?per_page=100" \
-              | jq -s 'add // []' > "$RUNNER_TEMP/assets.json"
-            while read -r ASSET_ID; do
-              [ -n "$ASSET_ID" ] && gh api --method DELETE \
-                "repos/${GITHUB_REPOSITORY}/releases/assets/${ASSET_ID}"
-            done < <(jq -r '.[].id' "$RUNNER_TEMP/assets.json")
+            if [ "$(jq -r '.draft' "$RUNNER_TEMP/release.json")" != "true" ]; then
+              if [ "$REPAIR_EXISTING" != "true" ]; then
+                echo "Release $RELEASE_TAG is already published; set repair_existing=true for an explicit asset repair" >&2
+                exit 1
+              fi
+              echo "Repairing published release $RELEASE_TAG without deleting old assets until new assets pass validation"
+            else
+              gh api --paginate \
+                "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets?per_page=100" \
+                | jq -s 'add // []' > "$RUNNER_TEMP/assets.json"
+              while read -r ASSET_ID; do
+                [ -n "$ASSET_ID" ] && gh api --method DELETE \
+                  "repos/${GITHUB_REPOSITORY}/releases/assets/${ASSET_ID}"
+              done < <(jq -r '.[].id' "$RUNNER_TEMP/assets.json")
+            fi
           else
             jq -n \
               --arg tag "$RELEASE_TAG" \
@@ -218,9 +227,37 @@ jobs:
       - name: Validate platform artifacts
         run: node .github/checks/release-assets.mjs "$RUNNER_TEMP/release-assets.json" "$RELEASE_TAG"
 
+  cleanup-release-assets:
+    name: Remove obsolete Release asset names
+    needs: [prepare-release, release-smoke]
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove non-ASCII downloadable asset names
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_ID: ${{ needs.prepare-release.outputs.release-id }}
+        run: |
+          set -euo pipefail
+          gh api --paginate \
+            "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets?per_page=100" \
+            | jq -s 'add // []' > "$RUNNER_TEMP/release-assets.json"
+          while IFS=$'\t' read -r ASSET_ID ASSET_NAME; do
+            case "$ASSET_NAME" in
+              grass-pet_*) ;;
+              *)
+                echo "Deleting obsolete Release asset: $ASSET_NAME"
+                gh api --method DELETE \
+                  "repos/${GITHUB_REPOSITORY}/releases/assets/${ASSET_ID}"
+                ;;
+            esac
+          done < <(jq -r '.[] | [.id, .name] | @tsv' "$RUNNER_TEMP/release-assets.json")
+
   publish:
     name: Publish GitHub Release
-    needs: [prepare-release, release-smoke]
+    needs: [prepare-release, release-smoke, cleanup-release-assets]
     permissions:
       contents: write
     runs-on: ubuntu-latest
