@@ -15,9 +15,9 @@ function readArgument(name) {
   return value;
 }
 
-const [packageJson, packageLock, petSpec, tauriConfig, cargoToml] = await Promise.all([
+const [packageJson, pnpmLock, petSpec, tauriConfig, cargoToml] = await Promise.all([
   readJson('package.json'),
-  readJson('package-lock.json'),
+  readFile(new URL('pnpm-lock.yaml', root), 'utf8'),
   readJson('pet-spec.json'),
   readJson('src-tauri/tauri.conf.json'),
   readFile(new URL('src-tauri/Cargo.toml', root), 'utf8'),
@@ -27,13 +27,18 @@ const cargoVersion = cargoToml.match(/^version\s*=\s*"([^"]+)"/m)?.[1];
 const expectedVersion = packageJson.version;
 const versions = new Map([
   ['package.json', packageJson.version],
-  ['package-lock.json', packageLock.version],
-  ['package-lock.json root package', packageLock.packages?.['']?.version],
   ['pet-spec.json', petSpec.app?.version],
   ['src-tauri/Cargo.toml', cargoVersion],
   ['src-tauri/tauri.conf.json', tauriConfig.version],
 ]);
 const errors = [];
+
+if (!/^lockfileVersion:\s*['"]?\d/m.test(pnpmLock)) {
+  errors.push('pnpm-lock.yaml does not declare a valid lockfile version');
+}
+if (!/^importers:\s*\n  \.:\s*$/m.test(pnpmLock)) {
+  errors.push('pnpm-lock.yaml is missing the root importer');
+}
 
 for (const [source, version] of versions) {
   if (typeof version !== 'string' || version.length === 0) {

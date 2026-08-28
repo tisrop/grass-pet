@@ -1,7 +1,7 @@
 {
   "mainBinaryName": "grass-pet-tauri-e2e",
   "build": {
-    "beforeBuildCommand": "npm run vue:build:e2e"
+    "beforeBuildCommand": "pnpm run vue:build:e2e"
   },
   "app": {
     "withGlobalTauri": true,

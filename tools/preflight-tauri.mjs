@@ -38,15 +38,15 @@ const contract = command(process.execPath, [path.join(root, 'tools', 'validate-t
 
 try {
   const packageJson = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
-  const lock = JSON.parse(await readFile(path.join(root, 'package-lock.json'), 'utf8'));
-  if (packageJson.name !== lock.name || packageJson.version !== lock.version) {
-    failures.push('package-lock identity does not match package.json');
+  const lock = await readFile(path.join(root, 'pnpm-lock.yaml'), 'utf8');
+  if (!/^lockfileVersion:\s*['"]?\d/m.test(lock)) {
+    failures.push('pnpm-lock.yaml has no valid lockfile version');
   }
-  if (lock.packages?.['']?.engines?.node !== packageJson.engines?.node) {
-    failures.push('package-lock root engine does not match package.json');
+  if (!/^importers:\s*\n  \.:\s*$/m.test(lock)) {
+    failures.push('pnpm-lock.yaml is missing the root importer');
   }
 } catch (error) {
-  failures.push(`package metadata could not be read: ${error instanceof Error ? error.message : String(error)}`);
+  failures.push(`package metadata or pnpm lockfile could not be read: ${error instanceof Error ? error.message : String(error)}`);
 }
 
 if (failures.length) {

@@ -111,7 +111,7 @@ for (const relative of [
   }
 }
 
-if (tauriConfig.build?.beforeDevCommand !== 'npm run vue:dev') {
+if (tauriConfig.build?.beforeDevCommand !== 'pnpm run vue:dev') {
   issues.push('src-tauri/tauri.conf.json: beforeDevCommand must run vue:dev');
 }
 if (tauriConfig.productName !== '阿飘道长桌宠') {
@@ -120,7 +120,7 @@ if (tauriConfig.productName !== '阿飘道长桌宠') {
 if (tauriConfig.mainBinaryName !== 'apiao-daozhang-desktop-pet') {
   issues.push('src-tauri/tauri.conf.json: mainBinaryName must use the stable ASCII executable target');
 }
-if (tauriConfig.build?.beforeBuildCommand !== 'npm run vue:build') {
+if (tauriConfig.build?.beforeBuildCommand !== 'pnpm run vue:build') {
   issues.push('src-tauri/tauri.conf.json: beforeBuildCommand must run vue:build');
 }
 if (tauriConfig.build?.frontendDist !== '../dist-vue') {
@@ -135,7 +135,7 @@ for (const label of ['pet', 'dashboard', 'reminder', 'context-menu']) {
   }
 }
 
-if (e2eConfig.build?.beforeBuildCommand !== 'npm run vue:build:e2e') {
+if (e2eConfig.build?.beforeBuildCommand !== 'pnpm run vue:build:e2e') {
   issues.push('src-tauri/tauri.e2e.conf.json: E2E build must enable the test frontend');
 }
 if (e2eConfig.mainBinaryName !== 'grass-pet-tauri-e2e') {

@@ -48,7 +48,7 @@ for (const [name, relative] of [
     const report = JSON.parse(await readFile(path.join(root, relative), 'utf8'));
     record(name, report.passed === true, { generatedAt: report.generatedAt, passed: report.passed });
   } catch (error) {
-    record(name, false, { error: error instanceof Error ? error.message : String(error), repair: 'Run npm run check' });
+    record(name, false, { error: error instanceof Error ? error.message : String(error), repair: 'Run pnpm run check' });
   }
 }
 

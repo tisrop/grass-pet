@@ -5,9 +5,9 @@
   "version": "1.1.0",
   "identifier": "com.grass.tuanzi",
   "build": {
-    "beforeDevCommand": "npm run vue:dev",
+    "beforeDevCommand": "pnpm run vue:dev",
     "devUrl": "http://127.0.0.1:1420",
-    "beforeBuildCommand": "npm run vue:build",
+    "beforeBuildCommand": "pnpm run vue:build",
     "frontendDist": "../dist-vue"
   },
   "app": {
