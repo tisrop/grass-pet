@@ -11,7 +11,7 @@ if (!Array.isArray(assets)) throw new Error('Release assets response must be an 
 
 const names = assets.map((asset) => asset?.name).filter((name) => typeof name === 'string');
 const version = tag.slice(1);
-const expectedPrefix = 'apiao-daozhang-desktop-pet_';
+const expectedPrefix = 'grass-pet_';
 const errors = [];
 const required = [
   ['macOS ARM64 DMG', (name) => name.endsWith('.dmg') && /(?:aarch64|arm64)/i.test(name)],
