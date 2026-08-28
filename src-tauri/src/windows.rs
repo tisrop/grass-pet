@@ -30,6 +30,72 @@ pub fn place_pet_near_bottom_right(app: &tauri::AppHandle) {
     let _ = window.set_position(PhysicalPosition::new(x, y));
 }
 
+const PET_TOP_TRANSPARENT_HEIGHT_LOGICAL: f64 = 80.0;
+
+/// Keeps the visible pet interactive while allowing the transparent part of
+/// the window to remain click-through. The OS must hit-test the pet window
+/// before the webview can receive a `contextmenu` event.
+pub fn spawn_cursor_hit_test(app: tauri::AppHandle) {
+    thread::spawn(move || {
+        let mut last_ignore_state: Option<bool> = None;
+        loop {
+            thread::sleep(Duration::from_millis(16));
+            let Some(window) = app.get_webview_window("pet") else {
+                break;
+            };
+            if !window.is_visible().unwrap_or(false) {
+                continue;
+            }
+
+            let click_through = app
+                .state::<AppState>()
+                .data
+                .lock()
+                .map(|data| data.settings.click_through)
+                .unwrap_or(false);
+            let ignore_cursor_events = if !click_through {
+                false
+            } else {
+                match (
+                    window.cursor_position(),
+                    window.outer_position(),
+                    window.outer_size(),
+                    window.scale_factor(),
+                ) {
+                    (Ok(cursor), Ok(position), Ok(size), Ok(scale_factor)) => {
+                        !cursor_in_pet_hit_area(cursor, position, size, scale_factor)
+                    }
+                    // Keep the original safe behavior if native geometry is
+                    // temporarily unavailable.
+                    _ => true,
+                }
+            };
+
+            if last_ignore_state != Some(ignore_cursor_events) {
+                let _ = window.set_ignore_cursor_events(ignore_cursor_events);
+                last_ignore_state = Some(ignore_cursor_events);
+            }
+        }
+    });
+}
+
+fn cursor_in_pet_hit_area(
+    cursor: tauri::PhysicalPosition<f64>,
+    position: tauri::PhysicalPosition<i32>,
+    size: tauri::PhysicalSize<u32>,
+    scale_factor: f64,
+) -> bool {
+    if !scale_factor.is_finite() || scale_factor <= 0.0 {
+        return false;
+    }
+    let transparent_height = (PET_TOP_TRANSPARENT_HEIGHT_LOGICAL * scale_factor).round() as i32;
+    let left = f64::from(position.x);
+    let right = left + f64::from(size.width);
+    let top = f64::from(position.y + size.height as i32 - transparent_height);
+    let bottom = f64::from(position.y) + f64::from(size.height);
+    cursor.x >= left && cursor.x < right && cursor.y >= top && cursor.y < bottom
+}
+
 pub fn spawn_auto_walk(app: tauri::AppHandle) {
     thread::spawn(move || {
         let mut direction = -1_i32;
@@ -135,7 +201,8 @@ pub fn spawn_companion_tracker(app: tauri::AppHandle) {
 
 #[cfg(test)]
 mod tests {
-    use super::{physical_walk_step, should_emit_walk_state};
+    use super::{cursor_in_pet_hit_area, physical_walk_step, should_emit_walk_state};
+    use tauri::{PhysicalPosition, PhysicalSize};
 
     #[test]
     fn walk_step_advances_at_least_one_logical_pixel() {
@@ -150,5 +217,25 @@ mod tests {
         assert!(!should_emit_walk_state(-1, -1, false));
         assert!(should_emit_walk_state(-1, -1, true));
         assert!(should_emit_walk_state(1, -1, false));
+    }
+
+    #[test]
+    fn cursor_inside_pet_hit_area_is_not_ignored() {
+        assert!(cursor_in_pet_hit_area(
+            PhysicalPosition::new(120.0, 300.0),
+            PhysicalPosition::new(0, 0),
+            PhysicalSize::new(240, 320),
+            1.0,
+        ));
+    }
+
+    #[test]
+    fn cursor_inside_transparent_top_area_remains_click_through() {
+        assert!(!cursor_in_pet_hit_area(
+            PhysicalPosition::new(120.0, 40.0),
+            PhysicalPosition::new(0, 0),
+            PhysicalSize::new(240, 320),
+            1.0,
+        ));
     }
 }

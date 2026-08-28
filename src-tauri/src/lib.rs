@@ -41,6 +41,7 @@ pub fn run() {
             windows::place_pet_near_bottom_right(app.handle());
             tray::install(app)?;
             windows::spawn_auto_walk(app.handle().clone());
+            windows::spawn_cursor_hit_test(app.handle().clone());
             windows::spawn_companion_tracker(app.handle().clone());
             reminders::spawn_scheduler(app.handle().clone());
             Ok(())

@@ -78,7 +78,7 @@ onBeforeUnmount(() => stopStats?.());
           <button class="toggle" :class="{ active: settings.alwaysOnTop }" type="button" role="switch" :aria-checked="settings.alwaysOnTop" aria-label="始终置顶" @click="updateSetting({ alwaysOnTop: !settings.alwaysOnTop })" />
         </div>
         <div class="setting-item">
-          <div><div class="setting-label">鼠标穿透</div><div class="setting-desc">忽略桌宠上的鼠标操作</div></div>
+          <div><div class="setting-label">鼠标穿透</div><div class="setting-desc">透明区域可穿透，右键桌宠仍可打开菜单</div></div>
           <button class="toggle" :class="{ active: settings.clickThrough }" type="button" role="switch" :aria-checked="settings.clickThrough" aria-label="鼠标穿透" @click="updateSetting({ clickThrough: !settings.clickThrough })" />
         </div>
         <div class="setting-item size-row">
