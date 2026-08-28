@@ -11,6 +11,7 @@ if (!Array.isArray(assets)) throw new Error('Release assets response must be an 
 
 const names = assets.map((asset) => asset?.name).filter((name) => typeof name === 'string');
 const version = tag.slice(1);
+const expectedPrefix = 'apiao-daozhang-desktop-pet_';
 const errors = [];
 const required = [
   ['macOS ARM64 DMG', (name) => name.endsWith('.dmg') && /(?:aarch64|arm64)/i.test(name)],
@@ -25,6 +26,9 @@ if (names.some((name) => name.endsWith('.sig'))) {
   errors.push('unexpected updater signature asset; updater signing is not configured');
 }
 for (const name of names) {
+  if (!name.startsWith(expectedPrefix)) {
+    errors.push(`asset name must use the ASCII prefix ${expectedPrefix}: ${name}`);
+  }
   if (!name.includes(version)) errors.push(`asset name does not include version ${version}: ${name}`);
 }
 for (const asset of assets) {

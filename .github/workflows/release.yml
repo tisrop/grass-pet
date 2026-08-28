@@ -184,6 +184,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           releaseId: ${{ needs.prepare-release.outputs.release-id }}
+          # GitHub sanitizes non-ASCII asset names in the downloadable URL.
+          # Keep the app/product name Chinese inside the installers, but use a
+          # stable ASCII name for Release assets themselves.
+          releaseAssetNamePattern: "apiao-daozhang-desktop-pet_[version]_[arch][setup][ext]"
           args: ${{ matrix.args }}
 
   release-smoke:
