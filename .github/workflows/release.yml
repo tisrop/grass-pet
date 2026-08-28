@@ -131,10 +131,9 @@ jobs:
             platform: macos-latest
             target: x86_64-apple-darwin
             args: --target x86_64-apple-darwin --bundles dmg
-          - name: Linux x64
-            platform: ubuntu-22.04
-            target: x86_64-unknown-linux-gnu
-            args: --bundles appimage,deb
+          # Linux AppImage/DEB builds are temporarily disabled.
+          # Re-enable this matrix entry together with the Linux requirement in
+          # .github/checks/release-assets.mjs when Linux packaging resumes.
           - name: Windows x64 (NSIS)
             platform: windows-latest
             target: x86_64-pc-windows-msvc

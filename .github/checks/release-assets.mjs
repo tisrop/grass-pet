@@ -16,7 +16,6 @@ const required = [
   ['macOS ARM64 DMG', (name) => name.endsWith('.dmg') && /(?:aarch64|arm64)/i.test(name)],
   ['macOS x64 DMG', (name) => name.endsWith('.dmg') && /(?:x64|x86_64)/i.test(name)],
   ['Windows installer', (name) => /\.(?:msi|exe)$/i.test(name)],
-  ['Linux package', (name) => /\.(?:AppImage|deb|rpm)$/i.test(name)],
 ];
 
 for (const [label, predicate] of required) {
