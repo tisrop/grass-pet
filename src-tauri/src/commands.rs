@@ -7,7 +7,7 @@ use chrono::{DateTime, Local, Utc};
 use serde::{Deserialize, Serialize};
 use std::{
     collections::HashSet,
-    process::{Command, Stdio},
+    process::{Child, Command, Stdio},
 };
 use tauri::{Emitter, Manager, State, WebviewWindow};
 use uuid::Uuid;
@@ -57,7 +57,7 @@ pub struct StateActivity {
     pub feedback: Option<String>,
 }
 
-pub(crate) fn spawn_new_pet_process() -> Result<u32, String> {
+pub(crate) fn spawn_new_pet_process() -> Result<Child, String> {
     let executable = std::env::current_exe().map_err(|error| error.to_string())?;
     let mut command = Command::new(executable);
     command
@@ -66,15 +66,13 @@ pub(crate) fn spawn_new_pet_process() -> Result<u32, String> {
         .stderr(Stdio::null());
     #[cfg(feature = "e2e")]
     command.env("WDIO_EMBEDDED_PORT", "45555");
-    command
-        .spawn()
-        .map(|child| child.id())
-        .map_err(|error| error.to_string())
+    command.spawn().map_err(|error| error.to_string())
 }
 
 #[tauri::command]
-pub fn summon_new_pet() -> Result<u32, String> {
-    spawn_new_pet_process()
+pub fn summon_new_pet(state: State<'_, AppState>) -> Result<u32, String> {
+    let child = spawn_new_pet_process()?;
+    state.track_spawned_pet(child)
 }
 
 #[tauri::command]
@@ -156,6 +154,7 @@ pub fn reminders_save(
         text: text.to_string(),
         due_at: input.due_at,
         created_at: Utc::now().to_rfc3339(),
+        notified_at: None,
     };
     state
         .data

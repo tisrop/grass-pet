@@ -29,6 +29,8 @@ pub fn install(app: &tauri::App) -> tauri::Result<()> {
         None::<&str>,
     )?;
     let hide_pet = MenuItem::with_id(app, "hide-pet", "隐藏桌宠", true, None::<&str>)?;
+    let quit_spawned =
+        MenuItem::with_id(app, "quit-spawned", "退出已召唤阿飘", true, None::<&str>)?;
     let quit = MenuItem::with_id(app, "quit", "退出", true, None::<&str>)?;
     let menu = Menu::with_items(
         app,
@@ -39,6 +41,7 @@ pub fn install(app: &tauri::App) -> tauri::Result<()> {
             &reminder,
             &click_through,
             &hide_pet,
+            &quit_spawned,
             &quit,
         ],
     )?;
@@ -56,7 +59,9 @@ pub fn install(app: &tauri::App) -> tauri::Result<()> {
                 }
             }
             "summon-pet" => {
-                let _ = commands::spawn_new_pet_process();
+                if let Ok(child) = commands::spawn_new_pet_process() {
+                    let _ = app.state::<AppState>().track_spawned_pet(child);
+                }
             }
             "dashboard" => {
                 let _ = commands::show_window(app, "dashboard");
@@ -77,6 +82,9 @@ pub fn install(app: &tauri::App) -> tauri::Result<()> {
                 if let Some(window) = app.get_webview_window("pet") {
                     let _ = window.hide();
                 }
+            }
+            "quit-spawned" => {
+                let _ = app.state::<AppState>().stop_spawned_pets();
             }
             "quit" => app.exit(0),
             _ => {}

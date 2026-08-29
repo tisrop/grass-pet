@@ -74,7 +74,9 @@ pub fn run() {
             event,
             tauri::RunEvent::ExitRequested { .. } | tauri::RunEvent::Exit
         ) {
-            let _ = handle.state::<AppState>().persist();
+            let state = handle.state::<AppState>();
+            let _ = state.persist();
+            let _ = state.stop_spawned_pets();
         }
     });
 }

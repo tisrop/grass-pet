@@ -190,6 +190,7 @@ pub fn spawn_companion_tracker(app: tauri::AppHandle) {
     thread::spawn(move || loop {
         thread::sleep(Duration::from_secs(60));
         let state = app.state::<AppState>();
+        let _ = state.reap_spawned_pets();
         if state.persist().is_err() {
             continue;
         }

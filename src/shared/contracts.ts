@@ -121,6 +121,7 @@ export interface Reminder {
   text: string;
   dueAt: string;
   createdAt: string;
+  notifiedAt?: string;
 }
 
 export interface StateActivity {
