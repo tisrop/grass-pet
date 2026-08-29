@@ -230,4 +230,4 @@ pnpm run doctor
 
 ## 许可证
 
-当前项目在 [`package.json`](./package.json) 中声明为 `UNLICENSED`，暂未发布开源许可证。未经项目维护者授权，请不要将项目或角色素材用于再分发。
+本项目采用 [MIT 许可证](./LICENSE) 开源。

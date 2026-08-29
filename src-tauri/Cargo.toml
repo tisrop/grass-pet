@@ -2,6 +2,7 @@
 name = "grass-pet-tauri"
 version = "1.1.0"
 description = "Tauri shell for 阿飘道长桌宠"
+license = "MIT"
 authors = ["Desktop Pet Builder User"]
 edition = "2021"
 

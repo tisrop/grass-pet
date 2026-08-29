@@ -3,7 +3,7 @@
   "version": "1.1.0",
   "private": true,
   "description": "Vue, Rust and Tauri cross-platform desktop pet",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "author": "Desktop Pet Builder User",
   "scripts": {
     "dev": "pnpm run tauri:dev",
