@@ -90,6 +90,15 @@
     ],
     "macOS": {
       "minimumSystemVersion": "10.15"
+    },
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDU5MzZCRDBBOTkxMUZGQwpSV1Q4SDVHcDBHdVRCVzNxeU10elR4c3ppUDRuUG1tQ3NWVnpxSXNNSWg3SU40eGNndUEwZmhReQo=",
+      "endpoints": [
+        "https://github.com/tisrop/grass-pet/releases/latest/download/latest.json"
+      ]
     }
   }
 }

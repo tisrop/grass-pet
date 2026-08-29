@@ -1,15 +1,32 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import spec from '../../pet-spec.json';
 import avatarUrl from '../../src/assets/pet/core-ip/core-ip.png';
-import type { InteractionSpec, PetSpec, PetStats, Settings } from '../../src/shared/contracts';
+import type { InteractionSpec, PetSpec, PetStats, Settings, UpdateCheckResult } from '../../src/shared/contracts';
 import { petApi } from '../shared/api';
 
 const petSpec = spec as PetSpec;
 const settings = ref<Settings>();
 const stats = ref<PetStats>({ affection: 0, mood: 0, todayInteractions: 0, companionMinutes: 0, lastInteractionDate: '' });
 const interactions = ref<InteractionSpec[]>([]);
+const updateResult = ref<UpdateCheckResult>();
+const updateError = ref('');
+const isCheckingUpdate = ref(false);
+const isInstallingUpdate = ref(false);
+const isUpdateInstalled = ref(false);
+const isRestartingUpdate = ref(false);
+const updateDownloaded = ref(0);
+const updateTotal = ref<number | null>(null);
+const updatePhase = ref<'downloading' | 'installing' | null>(null);
+const hasCheckedForUpdates = ref(false);
 let stopStats: (() => void) | undefined;
+let stopUpdateProgress: (() => void) | undefined;
+let stopDashboardShown: (() => void) | undefined;
+
+const updateProgressPercent = computed(() => {
+  if (!updateTotal.value || updateTotal.value <= 0) return null;
+  return Math.min(100, Math.round((updateDownloaded.value / updateTotal.value) * 100));
+});
 
 async function updateSetting(patch: Partial<Settings>): Promise<void> {
   settings.value = await petApi.settings.update(patch);
@@ -20,16 +37,87 @@ async function triggerInteraction(id: string): Promise<void> {
   stats.value = result.stats;
 }
 
+async function checkForUpdates(showErrors = true): Promise<void> {
+  if (isCheckingUpdate.value || isInstallingUpdate.value || isRestartingUpdate.value) return;
+  isCheckingUpdate.value = true;
+  if (showErrors) {
+    updateError.value = '';
+    updateResult.value = undefined;
+    hasCheckedForUpdates.value = false;
+  }
+  try {
+    updateResult.value = await petApi.updates.check();
+    hasCheckedForUpdates.value = true;
+  } catch (error) {
+    if (showErrors) updateError.value = error instanceof Error ? error.message : String(error);
+  } finally {
+    isCheckingUpdate.value = false;
+  }
+}
+
+function createUpdateRequestId(): string {
+  return globalThis.crypto?.randomUUID?.() ?? `update-${Date.now()}`;
+}
+
+async function installUpdate(): Promise<void> {
+  const version = updateResult.value?.version;
+  if (!updateResult.value?.available || !version || isInstallingUpdate.value) return;
+  if (updateResult.value.update_mode === 'portable') {
+    updateError.value = '当前版本为便携版，请下载新版安装包后手动覆盖。';
+    return;
+  }
+
+  updateError.value = '';
+  isInstallingUpdate.value = true;
+  updateDownloaded.value = 0;
+  updateTotal.value = null;
+  updatePhase.value = 'downloading';
+  try {
+    await petApi.updates.downloadAndInstall(createUpdateRequestId(), version);
+    isUpdateInstalled.value = true;
+  } catch (error) {
+    updateError.value = error instanceof Error ? error.message : String(error);
+  } finally {
+    isInstallingUpdate.value = false;
+  }
+}
+
+async function restartAfterUpdate(): Promise<void> {
+  if (!isUpdateInstalled.value || isRestartingUpdate.value) return;
+  isRestartingUpdate.value = true;
+  updateError.value = '';
+  try {
+    await petApi.updates.restart();
+  } catch (error) {
+    isRestartingUpdate.value = false;
+    updateError.value = error instanceof Error ? error.message : String(error);
+  }
+}
+
 onMounted(async () => {
+  stopDashboardShown = petApi.events.onDashboardShown(() => {
+    void checkForUpdates();
+  });
   [settings.value, stats.value, interactions.value] = await Promise.all([
     petApi.settings.get(),
     petApi.interactions.stats(),
     petApi.interactions.list(),
   ]);
   stopStats = petApi.events.onStats((next) => { stats.value = next; });
+  stopUpdateProgress = petApi.events.onUpdateProgress((progress) => {
+    if (isInstallingUpdate.value === false && progress.phase !== 'installing') return;
+    updateDownloaded.value = progress.downloaded;
+    updateTotal.value = progress.total;
+    updatePhase.value = progress.phase;
+  });
+  void checkForUpdates(false);
 });
 
-onBeforeUnmount(() => stopStats?.());
+onBeforeUnmount(() => {
+  stopStats?.();
+  stopUpdateProgress?.();
+  stopDashboardShown?.();
+});
 </script>
 
 <template>
@@ -88,6 +176,57 @@ onBeforeUnmount(() => stopStats?.());
           </div>
         </div>
         <button class="reminder-action" type="button" @click="petApi.window.showReminder()"><span aria-hidden="true">⏰</span>添加提醒</button>
+      </section>
+
+      <section class="panel-section update-section" aria-labelledby="update-title">
+        <div class="update-heading">
+          <h2 id="update-title" class="section-title"><span class="section-icon" aria-hidden="true">⬆️</span>应用更新</h2>
+          <span class="version-badge">v{{ updateResult?.current_version ?? petSpec.app.version }}</span>
+        </div>
+        <p class="setting-desc">检查新版本，下载后重启即可完成更新。</p>
+        <button
+          class="reminder-action update-check-button"
+          type="button"
+          data-testid="check-update"
+          :disabled="isCheckingUpdate || isInstallingUpdate || isUpdateInstalled || isRestartingUpdate"
+          @click="checkForUpdates()"
+        >
+          {{ isCheckingUpdate ? '检查中…' : '检查更新' }}
+        </button>
+        <p v-if="updateError" class="update-status update-status--error" role="status" aria-live="polite">{{ updateError }}</p>
+        <p v-else-if="isCheckingUpdate" class="update-status" role="status" aria-live="polite">正在连接更新服务器…</p>
+        <p v-else-if="hasCheckedForUpdates && !updateResult?.available" class="update-status" role="status">当前已是最新版本。</p>
+        <div v-if="updateResult?.available" class="update-result" role="status">
+          <strong>发现新版本 v{{ updateResult.version }}</strong>
+          <p v-if="updateResult.update_mode === 'portable'" class="update-status">便携版不支持自动安装，请下载新版安装包后手动覆盖。</p>
+          <pre v-if="updateResult.notes" class="update-notes">{{ updateResult.notes }}</pre>
+          <div v-if="isInstallingUpdate" class="update-progress" aria-live="polite">
+            <progress v-if="updateProgressPercent !== null" :value="updateProgressPercent" max="100" />
+            <span v-if="updatePhase === 'installing'">正在准备重启…</span>
+            <span v-else-if="updateProgressPercent !== null">正在下载 {{ updateProgressPercent }}%</span>
+            <span v-else>正在下载更新…</span>
+          </div>
+          <button
+            v-if="isUpdateInstalled"
+            class="reminder-action"
+            type="button"
+            data-testid="restart-update"
+            :disabled="isRestartingUpdate"
+            @click="restartAfterUpdate"
+          >
+            {{ isRestartingUpdate ? '正在重启…' : '立即重启完成更新' }}
+          </button>
+          <button
+            v-else-if="updateResult.update_mode !== 'portable'"
+            class="reminder-action"
+            type="button"
+            data-testid="install-update"
+            :disabled="isInstallingUpdate"
+            @click="installUpdate"
+          >
+            {{ isInstallingUpdate ? '更新中…' : '下载并安装' }}
+          </button>
+        </div>
       </section>
     </div>
   </main>

@@ -98,6 +98,14 @@ pnpm run make:mac
 
 构建产物通常位于 `src-tauri/target/` 下。未签名构建可能会触发操作系统的安全提示，正式分发前请根据目标平台配置代码签名和公证。
 
+## 应用内更新
+
+应用内更新使用 Tauri updater，并从 GitHub Releases 的 `latest.json` 获取签名发布信息。每次打开“道观”面板都会自动检查一次，也可以在“应用更新”区域手动检查、下载并重启安装。
+
+首次启用发布更新前，需要把本机临时目录中的 `/tmp/grass-pet-updater.key` 内容保存为 GitHub Actions Secret `TAURI_SIGNING_PRIVATE_KEY`，并设置 `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`（当前生成的开发密钥无密码时留空即可）。对应的公钥已经写入 [`src-tauri/tauri.conf.json`](./src-tauri/tauri.conf.json)，不要提交私钥或更换公钥后继续使用旧签名密钥。
+
+发布工作流会通过 `tauri-apps/tauri-action` 生成安装包签名和 `latest.json`。如果更新检查提示暂无发布元数据，请先确认对应版本的 GitHub Release 已发布，并且 Actions 中配置了上述签名 Secret。
+
 ## 测试与质量检查
 
 运行前端单元测试：

@@ -412,7 +412,12 @@ pub(crate) fn show_window(app: &tauri::AppHandle, label: &str) -> Result<(), Str
         .ok_or_else(|| format!("{label} window is unavailable"))?;
     window.show().map_err(|error| error.to_string())?;
     window.unminimize().map_err(|error| error.to_string())?;
-    window.set_focus().map_err(|error| error.to_string())
+    window.set_focus().map_err(|error| error.to_string())?;
+    if label == "dashboard" {
+        app.emit_to("dashboard", "dashboard-shown", ())
+            .map_err(|error| error.to_string())?;
+    }
+    Ok(())
 }
 
 #[tauri::command]

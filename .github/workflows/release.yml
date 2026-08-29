@@ -174,6 +174,16 @@ jobs:
           shared-key: release-${{ matrix.target }}
           cache-on-failure: true
 
+      - name: Require updater signing key
+        shell: bash
+        env:
+          UPDATER_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+        run: |
+          if [ -z "$UPDATER_KEY" ]; then
+            echo "TAURI_SIGNING_PRIVATE_KEY is required to publish updater artifacts" >&2
+            exit 1
+          fi
+
       - name: Install Linux dependencies
         if: startsWith(matrix.platform, 'ubuntu')
         run: |
@@ -197,17 +207,86 @@ jobs:
         uses: tauri-apps/tauri-action@v1.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           releaseId: ${{ needs.prepare-release.outputs.release-id }}
+          tagName: ${{ env.RELEASE_TAG }}
+          uploadUpdaterJson: false
           # GitHub sanitizes non-ASCII asset names in the downloadable URL.
           # Keep the app/product name Chinese inside the installers, but use a
           # stable ASCII name for Release assets themselves.
           releaseAssetNamePattern: "grass-pet_[version]_[arch][setup][ext]"
           args: ${{ matrix.args }}
 
+  assemble-updater-metadata:
+    name: Assemble updater metadata
+    needs: [prepare-release, build]
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+
+      - name: Fetch Release and updater signatures
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_ID: ${{ needs.prepare-release.outputs.release-id }}
+        run: |
+          set -euo pipefail
+          gh api "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" > "$RUNNER_TEMP/release.json"
+          gh api --paginate \
+            "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets?per_page=100" \
+            | jq -s 'add // []' > "$RUNNER_TEMP/release-assets.json"
+          mkdir -p "$RUNNER_TEMP/updater-signatures"
+          while IFS=$'\t' read -r ASSET_ID ASSET_NAME; do
+            gh api -H 'Accept: application/octet-stream' \
+              "repos/${GITHUB_REPOSITORY}/releases/assets/${ASSET_ID}" \
+              > "$RUNNER_TEMP/updater-signatures/${ASSET_NAME}"
+          done < <(jq -r '.[] | select(.name | endswith(".sig")) | [.id, .name] | @tsv' "$RUNNER_TEMP/release-assets.json")
+
+      - name: Generate one merged latest.json
+        env:
+          RELEASE_TAG: ${{ env.RELEASE_TAG }}
+          RELEASE_REPOSITORY: ${{ github.repository }}
+        run: |
+          node .github/checks/generate-updater-metadata.mjs \
+            --assets "$RUNNER_TEMP/release-assets.json" \
+            --release "$RUNNER_TEMP/release.json" \
+            --signatures-dir "$RUNNER_TEMP/updater-signatures" \
+            --repository "$RELEASE_REPOSITORY" \
+            --tag "$RELEASE_TAG" \
+            --output "$RUNNER_TEMP/latest.json"
+
+      - name: Replace draft latest.json
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_ID: ${{ needs.prepare-release.outputs.release-id }}
+        run: |
+          set -euo pipefail
+          while read -r ASSET_ID; do
+            [ -n "$ASSET_ID" ] && gh api --method DELETE \
+              "repos/${GITHUB_REPOSITORY}/releases/assets/${ASSET_ID}"
+          done < <(jq -r '.[] | select(.name == "latest.json") | .id' "$RUNNER_TEMP/release-assets.json")
+
+          RELEASE_UPLOAD_URL="$(jq -r '.upload_url' "$RUNNER_TEMP/release.json")"
+          RELEASE_UPLOAD_URL="${RELEASE_UPLOAD_URL%\{?name,label\}}"
+          gh api --method POST \
+            -H 'Content-Type: application/octet-stream' \
+            "${RELEASE_UPLOAD_URL}?name=latest.json" \
+            --input "$RUNNER_TEMP/latest.json"
+
   release-smoke:
     name: Validate draft release assets
-    needs: [prepare-release, build]
+    needs: [prepare-release, build, assemble-updater-metadata]
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -229,9 +308,17 @@ jobs:
           gh api --paginate \
             "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets?per_page=100" \
             | jq -s 'add // []' > "$RUNNER_TEMP/release-assets.json"
+          LATEST_ID="$(jq -r '[.[] | select(.name == "latest.json")] | if length == 1 then .[0].id else empty end' "$RUNNER_TEMP/release-assets.json")"
+          if [ -z "$LATEST_ID" ]; then
+            echo "Draft Release must contain exactly one latest.json" >&2
+            exit 1
+          fi
+          gh api -H 'Accept: application/octet-stream' \
+            "repos/${GITHUB_REPOSITORY}/releases/assets/${LATEST_ID}" \
+            > "$RUNNER_TEMP/latest.json"
 
-      - name: Validate platform artifacts
-        run: node .github/checks/release-assets.mjs "$RUNNER_TEMP/release-assets.json" "$RELEASE_TAG"
+      - name: Validate platform artifacts and updater metadata
+        run: node .github/checks/release-assets.mjs "$RUNNER_TEMP/release-assets.json" "$RELEASE_TAG" "$RUNNER_TEMP/latest.json"
 
   cleanup-release-assets:
     name: Remove obsolete Release asset names
@@ -252,7 +339,7 @@ jobs:
             | jq -s 'add // []' > "$RUNNER_TEMP/release-assets.json"
           while IFS=$'\t' read -r ASSET_ID ASSET_NAME; do
             case "$ASSET_NAME" in
-              grass-pet_*) ;;
+              grass-pet_*|latest.json) ;;
               *)
                 echo "Deleting obsolete Release asset: $ASSET_NAME"
                 gh api --method DELETE \

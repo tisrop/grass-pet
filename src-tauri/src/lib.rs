@@ -4,6 +4,7 @@ mod geometry;
 mod reminders;
 mod state;
 mod tray;
+mod update;
 mod windows;
 
 use chrono::Local;
@@ -12,7 +13,9 @@ use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let builder = tauri::Builder::default().plugin(tauri_plugin_notification::init());
+    let builder = tauri::Builder::default()
+        .plugin(tauri_plugin_notification::init())
+        .plugin(tauri_plugin_updater::Builder::new().build());
     #[cfg(feature = "e2e")]
     let builder = builder
         .plugin(tauri_plugin_wdio_webdriver::init())
@@ -66,6 +69,9 @@ pub fn run() {
             commands::walk_set_paused,
             commands::runtime_ready,
             commands::runtime_fail,
+            update::update_check,
+            update::update_download_and_install,
+            update::update_restart,
         ])
         .build(tauri::generate_context!())
         .expect("error while building the Tauri application");

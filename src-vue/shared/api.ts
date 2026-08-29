@@ -11,6 +11,8 @@ import type {
   RuntimeReadyReport,
   Settings,
   StateActivity,
+  UpdateCheckResult,
+  UpdateProgressEvent,
 } from '../../src/shared/contracts';
 
 function onEvent<T>(name: string, listener: (payload: T) => void): () => void {
@@ -55,6 +57,12 @@ const tauriApi: PetAPI = {
   walk: {
     setPaused: (reason, paused) => invoke<void>('walk_set_paused', { reason, paused }),
   },
+  updates: {
+    check: () => invoke<UpdateCheckResult>('update_check'),
+    downloadAndInstall: (requestId, expectedVersion) =>
+      invoke<void>('update_download_and_install', { requestId, expectedVersion }),
+    restart: () => invoke<void>('update_restart'),
+  },
   runtime: {
     ready: (report: RuntimeReadyReport) => invoke<void>('runtime_ready', { report }),
     fail: (report: RuntimeFailureReport) => invoke<void>('runtime_fail', { report }),
@@ -64,6 +72,8 @@ const tauriApi: PetAPI = {
     onReminder: (listener) => onEvent<Reminder>('reminder-due', listener),
     onReminderCompose: (listener) => onEvent<undefined>('reminder-compose', listener),
     onStats: (listener) => onEvent<PetStats>('stats-updated', listener),
+    onUpdateProgress: (listener) => onEvent<UpdateProgressEvent>('update-progress', listener),
+    onDashboardShown: (listener) => onEvent<undefined>('dashboard-shown', listener),
   },
 };
 

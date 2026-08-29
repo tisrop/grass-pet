@@ -31,6 +31,7 @@ pub fn install(app: &tauri::App) -> tauri::Result<()> {
     let hide_pet = MenuItem::with_id(app, "hide-pet", "隐藏桌宠", true, None::<&str>)?;
     let quit_spawned =
         MenuItem::with_id(app, "quit-spawned", "退出已召唤阿飘", true, None::<&str>)?;
+    let check_updates = MenuItem::with_id(app, "check-updates", "检查更新", true, None::<&str>)?;
     let quit = MenuItem::with_id(app, "quit", "退出", true, None::<&str>)?;
     let menu = Menu::with_items(
         app,
@@ -42,6 +43,7 @@ pub fn install(app: &tauri::App) -> tauri::Result<()> {
             &click_through,
             &hide_pet,
             &quit_spawned,
+            &check_updates,
             &quit,
         ],
     )?;
@@ -85,6 +87,9 @@ pub fn install(app: &tauri::App) -> tauri::Result<()> {
             }
             "quit-spawned" => {
                 let _ = app.state::<AppState>().stop_spawned_pets();
+            }
+            "check-updates" => {
+                let _ = commands::show_window(app, "dashboard");
             }
             "quit" => app.exit(0),
             _ => {}

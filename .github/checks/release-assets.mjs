@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import process from 'node:process';
 
-const [assetsPath, tag] = process.argv.slice(2);
+const [assetsPath, tag, latestPath] = process.argv.slice(2);
 if (!assetsPath || !/^v\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(tag ?? '')) {
   throw new Error('Usage: node release-assets.mjs <release-assets.json> <vX.Y.Z tag>');
 }
@@ -22,18 +22,52 @@ const required = [
 for (const [label, predicate] of required) {
   if (!names.some(predicate)) errors.push(`missing ${label}`);
 }
-if (names.some((name) => name.endsWith('.sig'))) {
-  errors.push('unexpected updater signature asset; updater signing is not configured');
+const updaterMetadata = names.filter((name) => name === 'latest.json');
+if (updaterMetadata.length !== 1) {
+  errors.push(`expected exactly one latest.json updater metadata asset, found ${updaterMetadata.length}`);
 }
 for (const name of names) {
+  if (name === 'latest.json') continue;
   if (!name.startsWith(expectedPrefix)) {
     errors.push(`asset name must use the ASCII prefix ${expectedPrefix}: ${name}`);
   }
   if (!name.includes(version)) errors.push(`asset name does not include version ${version}: ${name}`);
 }
 for (const asset of assets) {
+  if (asset?.name === 'latest.json' || asset?.name?.endsWith('.sig')) continue;
   if (!Number.isInteger(asset?.size) || asset.size < 1024 * 1024) {
     errors.push(`asset is unexpectedly small or has no size: ${asset?.name ?? '<unknown>'}`);
+  }
+}
+
+if (latestPath) {
+  let metadata;
+  try {
+    metadata = JSON.parse(await readFile(latestPath, 'utf8'));
+  } catch (error) {
+    errors.push(`latest.json is not valid JSON: ${error.message}`);
+  }
+  const expectedPlatforms = ['darwin-aarch64', 'darwin-x86_64', 'windows-x86_64'];
+  const actualPlatforms = Object.keys(metadata?.platforms ?? {}).sort();
+  if (metadata?.version !== version) {
+    errors.push(`latest.json version ${metadata?.version ?? '<missing>'} does not match ${version}`);
+  }
+  if (actualPlatforms.join(',') !== expectedPlatforms.slice().sort().join(',')) {
+    errors.push(`latest.json must contain exactly: ${expectedPlatforms.join(', ')}`);
+  }
+  for (const platform of expectedPlatforms) {
+    const entry = metadata?.platforms?.[platform];
+    if (!entry || typeof entry.url !== 'string' || typeof entry.signature !== 'string' || !entry.signature.trim()) {
+      errors.push(`latest.json has an incomplete ${platform} entry`);
+      continue;
+    }
+    const assetName = entry.url.split('/').pop();
+    if (!assetName || !names.includes(assetName)) {
+      errors.push(`latest.json ${platform} URL does not reference a Release asset`);
+    }
+    if (!names.includes(`${assetName}.sig`)) {
+      errors.push(`latest.json ${platform} URL has no matching .sig asset`);
+    }
   }
 }
 

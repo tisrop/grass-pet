@@ -153,6 +153,22 @@ export interface InteractionResult {
   stats: PetStats;
 }
 
+export interface UpdateCheckResult {
+  current_version: string;
+  available: boolean;
+  version: string | null;
+  notes: string | null;
+  published_at: string | null;
+  update_mode: 'installer' | 'portable';
+}
+
+export interface UpdateProgressEvent {
+  request_id: string;
+  downloaded: number;
+  total: number | null;
+  phase: 'downloading' | 'installing';
+}
+
 export interface PetAPI {
   settings: {
     get: () => Promise<Settings>;
@@ -182,6 +198,11 @@ export interface PetAPI {
   walk: {
     setPaused: (reason: string, paused: boolean) => Promise<void>;
   };
+  updates: {
+    check: () => Promise<UpdateCheckResult>;
+    downloadAndInstall: (requestId: string, expectedVersion: string) => Promise<void>;
+    restart: () => Promise<void>;
+  };
   runtime: {
     ready: (report: RuntimeReadyReport) => Promise<void>;
     fail: (report: RuntimeFailureReport) => Promise<void>;
@@ -191,6 +212,8 @@ export interface PetAPI {
     onReminder: (listener: (reminder: Reminder) => void) => () => void;
     onReminderCompose: (listener: () => void) => () => void;
     onStats: (listener: (stats: PetStats) => void) => () => void;
+    onUpdateProgress: (listener: (progress: UpdateProgressEvent) => void) => () => void;
+    onDashboardShown: (listener: () => void) => () => void;
   };
 }
 
