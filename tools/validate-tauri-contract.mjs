@@ -79,7 +79,7 @@ for (const name of Object.keys(scripts)) {
 if ('main' in packageJson) issues.push('package.json: Electron main entry must be removed');
 if ('build' in packageJson) issues.push('package.json: Electron Builder configuration must be removed');
 
-const directDependencies = { ...(packageJson.dependencies ?? {}), ...(packageJson.devDependencies ?? {}) };
+const directDependencies = { ...packageJson.dependencies, ...packageJson.devDependencies };
 const forbiddenDependency = /^(electron|electron-builder|@electron(?:\/|-)|@electron-forge\/|@playwright\/test$|webpack$|css-loader$|ts-loader$|mini-css-extract-plugin$)/;
 for (const name of Object.keys(directDependencies)) {
   if (forbiddenDependency.test(name)) issues.push(`package.json: Electron-only dependency must be removed: ${name}`);

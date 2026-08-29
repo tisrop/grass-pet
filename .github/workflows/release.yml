@@ -49,6 +49,8 @@ jobs:
       - name: Verify tag and manifests
         run: |
           node .github/checks/version-consistency.mjs --tag "$RELEASE_TAG"
+          pnpm run lint
+          pnpm run fmt:check
           pnpm run preflight
 
   prepare-release:

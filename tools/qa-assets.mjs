@@ -190,7 +190,8 @@ for (const state of states) {
       const warnings = [];
       if (detachedGround) {
         const message = `detached ground/shadow component remains: ${detachedGround.bounds.join(',')}`;
-        regressionFixture ? warnings.push(message) : addDiagnostic(errors, diagnostics, 'GROUND_RESIDUE', message);
+        if (regressionFixture) warnings.push(message);
+        else addDiagnostic(errors, diagnostics, 'GROUND_RESIDUE', message);
       }
       const flatGround = flatGroundEvidence(data, info.width, bounds);
       if (flatGround) {
@@ -202,7 +203,8 @@ for (const state of states) {
       const coloredGround = coloredGroundEvidence(data, info.width, info.height, bounds, main?.pixels ?? opaque);
       if (coloredGround) {
         const message = `wide saturated ground/background residue remains near the anchor (${coloredGround.colorBin})`;
-        regressionFixture ? warnings.push(message) : addDiagnostic(errors, diagnostics, 'GROUND_RESIDUE', message);
+        if (regressionFixture) warnings.push(message);
+        else addDiagnostic(errors, diagnostics, 'GROUND_RESIDUE', message);
       }
       records.push({ state: state.id, frame, ok: errors.length === 0, errors, diagnostics, warnings, sha256: createHash('sha256').update(data).digest('hex'), fileSha256: createHash('sha256').update(fileBytes).digest('hex'), transparentRatio: transparent / (info.width * info.height), bounds, componentCount: components.length, flatGround, coloredGround });
     } catch (error) {

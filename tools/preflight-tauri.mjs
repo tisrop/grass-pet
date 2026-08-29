@@ -37,7 +37,7 @@ const tauri = command(process.execPath, [path.join(root, 'node_modules', '@tauri
 const contract = command(process.execPath, [path.join(root, 'tools', 'validate-tauri-contract.mjs')]);
 
 try {
-  const packageJson = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
+  JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
   const lock = await readFile(path.join(root, 'pnpm-lock.yaml'), 'utf8');
   if (!/^lockfileVersion:\s*['"]?\d/m.test(lock)) {
     failures.push('pnpm-lock.yaml has no valid lockfile version');

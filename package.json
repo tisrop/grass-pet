@@ -1,10 +1,10 @@
 {
   "name": "apiao-daozhang-desktop-pet",
-  "productName": "阿飘道长桌宠",
   "version": "1.1.0",
-  "description": "Vue, Rust and Tauri cross-platform desktop pet",
   "private": true,
-  "packageManager": "pnpm@11.17.0",
+  "description": "Vue, Rust and Tauri cross-platform desktop pet",
+  "license": "UNLICENSED",
+  "author": "Desktop Pet Builder User",
   "scripts": {
     "dev": "pnpm run tauri:dev",
     "start": "pnpm run tauri:dev",
@@ -17,9 +17,14 @@
     "tauri:build": "tauri build --no-bundle && node tools/create-named-launcher.mjs",
     "tauri:bundle": "tauri build",
     "check": "pnpm run check:tauri",
+    "lint": "oxlint src-vue src tests tools .github/checks --vue-plugin",
+    "lint:fix": "oxlint src-vue src tests tools .github/checks --vue-plugin --fix",
+    "fmt": "oxfmt package.json pnpm-workspace.yaml .oxlintrc.json .oxfmtrc.json",
+    "fmt:check": "oxfmt package.json pnpm-workspace.yaml .oxlintrc.json .oxfmtrc.json --check",
+    "fmt:all": "oxfmt package.json pnpm-workspace.yaml .oxlintrc.json .oxfmtrc.json vite.config.mts wdio.conf.ts src-vue src tests tools .github/checks",
     "check:frontend": "vue-tsc -p tsconfig.vue.json --noEmit",
     "check:rust": "cargo check --manifest-path src-tauri/Cargo.toml",
-    "check:tauri": "pnpm run check:frontend && pnpm run check:rust && node tools/validate-tauri-contract.mjs && node tools/validate-spec.mjs && node tools/validate-asset-links.mjs && node tools/qa-ui.mjs && node tools/qa-experience.mjs && node tools/qa-assets.mjs",
+    "check:tauri": "pnpm run lint && pnpm run check:frontend && pnpm run check:rust && node tools/validate-tauri-contract.mjs && node tools/validate-spec.mjs && node tools/validate-asset-links.mjs && node tools/qa-ui.mjs && node tools/qa-experience.mjs && node tools/qa-assets.mjs",
     "test": "tsx --test tests/unit/state-machine.test.ts tests/unit/drag.test.ts",
     "test:tauri": "pnpm test && cargo test --manifest-path src-tauri/Cargo.toml",
     "test:e2e:build": "tauri build --no-bundle --features e2e --config src-tauri/tauri.e2e.conf.json",
@@ -39,8 +44,11 @@
     "make:mac": "tauri build --bundles dmg",
     "portable:mac": "tauri build --bundles app"
   },
-  "author": "Desktop Pet Builder User",
-  "license": "UNLICENSED",
+  "dependencies": {
+    "@tauri-apps/api": "^2.11.1",
+    "@tauri-apps/plugin-notification": "^2.3.3",
+    "vue": "^3.5.41"
+  },
   "devDependencies": {
     "@tauri-apps/cli": "^2.11.4",
     "@types/node": "^22.15.0",
@@ -52,6 +60,8 @@
     "@wdio/spec-reporter": "^9.31.2",
     "@wdio/tauri-plugin": "^1.3.0",
     "@wdio/tauri-service": "^1.3.0",
+    "oxfmt": "0.65.0",
+    "oxlint": "1.80.0",
     "sharp": "^0.34.3",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
@@ -59,12 +69,9 @@
     "vue-tsc": "^3.3.11",
     "webdriverio": "^9.31.3"
   },
-  "dependencies": {
-    "@tauri-apps/api": "^2.11.1",
-    "@tauri-apps/plugin-notification": "^2.3.3",
-    "vue": "^3.5.41"
-  },
   "engines": {
     "node": ">=22"
-  }
+  },
+  "packageManager": "pnpm@11.17.0",
+  "productName": "阿飘道长桌宠"
 }
